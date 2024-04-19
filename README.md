@@ -231,6 +231,15 @@ your cluster will be used.
 
 The `bsub` parameter that this controls is [`-P`][bsub-P].
 
+#### `default_group`
+
+**Default**: None
+
+The default group on the cluster to submit jobs with. If left unset, then the default on
+your cluster will be used.
+
+The `bsub` parameter that this controls is [`-G`][bsub-G].
+
 #### `max_status_checks_per_second`
 
 **Default**: `10`

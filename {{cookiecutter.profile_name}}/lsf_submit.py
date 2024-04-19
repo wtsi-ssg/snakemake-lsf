@@ -186,8 +186,18 @@ class Submitter:
         return self.cluster.get("project", CookieCutter.get_default_project())
 
     @property
+    def group(self) -> str:
+        if re.search(r"-G ", self.rule_specific_params):
+            return ""
+        return self.cluster.get("group", CookieCutter.get_default_group())
+
+    @property
     def proj_cmd(self) -> str:
         return "-P {}".format(self.proj) if self.proj else ""
+
+    @property
+    def group_cmd(self) -> str:
+        return "-G {}".format(self.group) if self.group else ""
 
     @property
     def cluster_cmd(self) -> str:
@@ -201,6 +211,7 @@ class Submitter:
             self.jobinfo_cmd,
             self.queue_cmd,
             self.proj_cmd,
+            self.group_cmd,
             self.cluster_cmd,
             self.rule_specific_params,
             self.jobscript,

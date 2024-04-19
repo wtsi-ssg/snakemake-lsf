@@ -20,6 +20,10 @@ class CookieCutter:
         return "{{cookiecutter.default_project}}"
 
     @staticmethod
+    def get_default_group() -> str:
+        return "{{cookiecutter.default_group}}"
+
+    @staticmethod
     def get_lsf_unit_for_limits() -> str:
         return "{{cookiecutter.LSF_UNIT_FOR_LIMITS}}"
 

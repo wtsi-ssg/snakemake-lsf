@@ -26,6 +26,7 @@
   "default_cluster_logdir": "logs/cluster",
   "default_queue": "",
   "default_project": "",
+  "default_group": "",
   "max_status_checks_per_second": 10,
   "max_jobs_per_second": 10,
   "max_status_checks": 1,

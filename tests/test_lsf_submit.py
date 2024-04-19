@@ -27,6 +27,9 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_group.__name__, return_value="grp"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test___several_trivial_getter_methods(self, *mocks):
         argv = [
@@ -74,10 +77,12 @@ class TestSubmitter(unittest.TestCase):
         self.assertEqual(lsf_submit.queue_cmd, "-q q1")
         self.assertEqual(lsf_submit.proj, "proj")
         self.assertEqual(lsf_submit.proj_cmd, "-P proj")
+        self.assertEqual(lsf_submit.group, "grp")
+        self.assertEqual(lsf_submit.group_cmd, "-G grp")
         self.assertEqual(
             lsf_submit.submit_cmd,
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj -G grp cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd),
         )
 
@@ -148,6 +153,9 @@ class TestSubmitter(unittest.TestCase):
     @patch.object(
         CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_group.__name__, return_value="grp"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
     @patch.object(OSLayer, OSLayer.remove_file.__name__)
@@ -199,7 +207,7 @@ class TestSubmitter(unittest.TestCase):
         expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj -G grp cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print_mock.assert_called_once_with(
@@ -214,6 +222,9 @@ class TestSubmitter(unittest.TestCase):
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_group.__name__, return_value="grp"
     )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     @patch.object(OSLayer, OSLayer.mkdir.__name__)
@@ -258,7 +269,7 @@ class TestSubmitter(unittest.TestCase):
         expected_mem = "2662"
         run_process_mock.assert_called_once_with(
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
-            "{jobinfo} -q q1 -P proj cluster_opt_1 cluster_opt_2 cluster_opt_3 "
+            "{jobinfo} -q q1 -P proj -G grp cluster_opt_1 cluster_opt_2 cluster_opt_3 "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
         print_mock.assert_not_called()
@@ -306,7 +317,7 @@ class TestSubmitter(unittest.TestCase):
 __default__:
   - "-R 'select[mem>2000]'"
   - '-gpu -'
-search_fasta_on_index: '-P project'
+search_fasta_on_index: '-P project -G group'
 """
         stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
@@ -334,7 +345,7 @@ search_fasta_on_index: '-P project'
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} -q q1 cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "-R 'select[mem>2000]' -gpu - -P project "
+            "-R 'select[mem>2000]' -gpu - -P project -G group "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
 
@@ -349,6 +360,9 @@ search_fasta_on_index: '-P project'
     @patch.object(
         CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
     )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_group.__name__, return_value="grp"
+    )
     @patch.object(OSLayer, OSLayer.get_uuid4_string.__name__, return_value="random")
     def test_lsf_mem_unit_is_kb_and_mem_mb_is_converted_accordingly(self, *mocks):
         argv = [
@@ -360,7 +374,7 @@ search_fasta_on_index: '-P project'
         ]
         content = (
             "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
-            "search_fasta_on_index: '-P project'"
+            "search_fasta_on_index: '-P project -G group'"
         )
         stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
@@ -388,7 +402,7 @@ search_fasta_on_index: '-P project'
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "-q queue -gpu - -P project "
+            "-q queue -gpu - -P project -G group "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
 
@@ -399,6 +413,9 @@ search_fasta_on_index: '-P project'
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_project.__name__, return_value="proj"
+    )
+    @patch.object(
+        CookieCutter, CookieCutter.get_default_group.__name__, return_value="grp"
     )
     @patch.object(
         CookieCutter, CookieCutter.get_default_mem_mb.__name__, return_value=1000
@@ -416,7 +433,7 @@ search_fasta_on_index: '-P project'
         ]
         content = (
             "__default__:\n  - '-q queue'\n  - '-gpu -'\n"
-            "search_fasta_on_index: '-P project'"
+            "search_fasta_on_index: '-P project -G group'"
         )
         stream = StringIO(content)
         lsf_config = Config.from_stream(stream)
@@ -444,7 +461,7 @@ search_fasta_on_index: '-P project'
         expected = (
             "bsub -M {mem} -n 1 -R 'select[mem>{mem}] rusage[mem={mem}] span[hosts=1]' "
             "{jobinfo} cluster_opt_1 cluster_opt_2 cluster_opt_3 "
-            "-q queue -gpu - -P project "
+            "-q queue -gpu - -P project -G group "
             "real_jobscript.sh".format(mem=expected_mem, jobinfo=expected_jobinfo_cmd)
         )
 
