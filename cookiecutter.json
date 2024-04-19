@@ -1,7 +1,7 @@
 {
   "LSF_UNIT_FOR_LIMITS": [
-    "KB",
     "MB",
+    "KB",
     "GB",
     "TB",
     "PB",
@@ -13,8 +13,8 @@
     "kill"
   ],
   "ZOMBI_behaviour": [
-    "ignore",
-    "kill"
+    "kill",
+    "ignore"
   ],
   "latency_wait": 5,
   "use_conda": false,
@@ -24,7 +24,7 @@
   "jobs": 500,
   "default_mem_mb": 1024,
   "default_cluster_logdir": "logs/cluster",
-  "default_queue": "",
+  "default_queue": "normal",
   "default_project": "",
   "default_group": "",
   "max_status_checks_per_second": 10,
@@ -32,5 +32,5 @@
   "max_status_checks": 1,
   "wait_between_tries": 0.001,
   "jobscript_timeout": 10,
-  "profile_name": "lsf"
+  "profile_name": "lsf-sanger"
 }
